@@ -1,11 +1,11 @@
 package com.juliasz.blog.service;
 
 import com.juliasz.blog.model.User;
+import com.juliasz.blog.model.dto.NewPassword;
 import com.juliasz.blog.model.dto.NewUserDto;
 import com.juliasz.blog.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -16,12 +16,12 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordService passwordService;
 
     @Autowired
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordService passwordService) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.passwordService = passwordService;
     }
 
     public List<User> findAll() {
@@ -41,7 +41,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email already exists");
         }
         User user = new User(newUser);
-        user.setPassword(encryptPassword(user.getPassword()));
+        user.setPassword(passwordService.encryptPassword(user.getPassword()));
         userRepository.save(user);
         return user;
     }
@@ -51,12 +51,15 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    private boolean validateUserEmail(String email) {
-        return userRepository.existsByEmail(email);
+    public void updatePassword(Long id, NewPassword newPassword) {
+        User user = findOne(id);
+        passwordService.validatePassword(user.getPassword(), newPassword.getOldPassword());
+        user.setPassword(passwordService.encryptPassword(newPassword.getNewPassword()));
+        userRepository.save(user);
     }
 
-    private String encryptPassword(String password) {
-        return passwordEncoder.encode(password);
+    private boolean validateUserEmail(String email) {
+        return userRepository.existsByEmail(email);
     }
 
 }

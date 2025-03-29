@@ -1,6 +1,7 @@
 package com.juliasz.blog.controller;
 
 import com.juliasz.blog.model.User;
+import com.juliasz.blog.model.dto.NewPassword;
 import com.juliasz.blog.model.dto.NewUserDto;
 import com.juliasz.blog.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,11 @@ public class UserController {
     @PostMapping
     public User createUser(@RequestBody NewUserDto user) {
         return userService.createUser(user);
+    }
+
+    @PostMapping(value = "{id}")
+    public void updatePassword(@PathVariable Long id, @RequestBody NewPassword newPassword) {
+        userService.updatePassword(id, newPassword);
     }
 
     @DeleteMapping(value = "{id}")
