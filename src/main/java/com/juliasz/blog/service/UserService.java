@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -27,8 +28,12 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    private boolean validateUserEmail(String email) {
-        return userRepository.existsByEmail(email);
+    public User findOne(Long id) {
+        Optional<User> foundUser = userRepository.findById(id);
+        if(foundUser.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        return foundUser.get();
     }
 
     public User createUser(NewUserDto newUser) {
@@ -39,6 +44,15 @@ public class UserService {
         user.setPassword(encryptPassword(user.getPassword()));
         userRepository.save(user);
         return user;
+    }
+
+    public void deleteUser(Long id) {
+        findOne(id);
+        userRepository.deleteById(id);
+    }
+
+    private boolean validateUserEmail(String email) {
+        return userRepository.existsByEmail(email);
     }
 
     private String encryptPassword(String password) {

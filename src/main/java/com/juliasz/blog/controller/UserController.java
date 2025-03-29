@@ -5,7 +5,6 @@ import com.juliasz.blog.model.dto.NewUserDto;
 import com.juliasz.blog.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,8 +21,18 @@ public class UserController {
         return userService.findAll();
     }
 
+    @GetMapping(value = "{id}")
+    public User findOne(@PathVariable Long id) {
+        return userService.findOne(id);
+    }
+
     @PostMapping
     public User createUser(@RequestBody NewUserDto user) {
         return userService.createUser(user);
+    }
+
+    @DeleteMapping(value = "{id}")
+    public void deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
     }
 }

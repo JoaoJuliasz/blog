@@ -16,6 +16,7 @@ public class User {
     private String email;
     private String password;
 
+    public User(){}
     public User(NewUserDto newUser) {
         this.setFirstName(newUser.getFirstName());
         this.setLastName(newUser.getLastName());
