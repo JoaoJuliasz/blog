@@ -15,6 +15,10 @@ public class User {
     private String lastName;
     private String email;
     private String password;
+    private String about;
+    private String image;
+    @Column(name = "social_media", nullable = true)
+    private SocialMedia socialMedia;
 
     public User(){}
     public User(NewUserDto newUser) {
@@ -62,5 +66,30 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+
+    public String getAbout() {
+        return about;
+    }
+
+    public void setAbout(String about) {
+        this.about = about;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public SocialMedia getSocialMedia() {
+        return socialMedia;
+    }
+
+    public void setSocialMedia(SocialMedia socialMedia) {
+        this.socialMedia = socialMedia;
     }
 }

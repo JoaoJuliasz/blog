@@ -7,6 +7,7 @@ import com.juliasz.blog.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -35,6 +36,11 @@ public class UserController {
     @PostMapping(value = "{id}")
     public void updatePassword(@PathVariable Long id, @RequestBody NewPassword newPassword) {
         userService.updatePassword(id, newPassword);
+    }
+
+    @PatchMapping(value = "{id}")
+    public User updateUser(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+        return userService.updateUser(updates, id);
     }
 
     @DeleteMapping(value = "{id}")
