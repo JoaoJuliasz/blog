@@ -58,8 +58,11 @@ public class UserService {
         User user = findOne(id);
         updates.forEach((key, value) -> {
             Field field = ReflectionUtils.findField(User.class, key);
-            if(field == null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("The field %s does not exist", key));
+            if (field == null) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        String.format("The field %s does not exist", key)
+                );
             }
             field.setAccessible(true);
             ReflectionUtils.setField(field, user, value);
