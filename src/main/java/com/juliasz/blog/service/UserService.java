@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -22,10 +23,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordService passwordService;
 
+    private final EmailService emailService;
+
     @Autowired
-    public UserService(UserRepository userRepository, PasswordService passwordService) {
+    public UserService(UserRepository userRepository, PasswordService passwordService, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordService = passwordService;
+        this.emailService = emailService;
     }
 
     public List<User> findAll() {
@@ -44,9 +48,11 @@ public class UserService {
         if (validateUserEmail(newUser.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email already exists");
         }
+        String token = UUID.randomUUID().toString();
+        this.emailService.sendConfirmationEmail(newUser.getEmail(), token);
         User user = new User(newUser);
         user.setPassword(passwordService.encryptPassword(user.getPassword()));
-        userRepository.save(user);
+//        userRepository.save(user);
         return user;
     }
 
