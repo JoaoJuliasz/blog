@@ -6,9 +6,13 @@ import com.juliasz.blog.model.dto.PostDto;
 import com.juliasz.blog.repository.PostRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.lang.reflect.Field;
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -30,10 +34,31 @@ public class PostService {
         return foundPost.get();
     }
 
+    public List<Post> findAll() {
+        return postRepository.findAll();
+    }
+
     public Post createPost(PostDto postDto) {
         Set<Tag> tags = tagService.createAllTag(postDto.getTags());
         Post newPost = new Post(postDto.getTitle(), postDto.getSubtitle(), postDto.getImage(), postDto.getBody(), 0, 0, postDto.getCreatorId(), new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()), tags);
         postRepository.save(newPost);
         return newPost;
+    }
+
+    public Post updatePost(Map<String, Object> updates, Long id) {
+        Post post = findOne(id);
+        updates.forEach((key, value) -> {
+            Field field = ReflectionUtils.findField(Post.class, key);
+            if (field == null) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        String.format("The field %s does not exist", key)
+                );
+            }
+            field.setAccessible(true);
+            ReflectionUtils.setField(field, post, value);
+        });
+        postRepository.save(post);
+        return post;
     }
 }
