@@ -1,5 +1,6 @@
 package com.juliasz.blog.model;
 
+import com.juliasz.blog.enums.UserStatus;
 import com.juliasz.blog.model.dto.NewUserDto;
 import jakarta.persistence.*;
 
@@ -17,6 +18,7 @@ public class User {
     private String password;
     private String about;
     private String image;
+    private UserStatus status;
     @Column(name = "social_media", nullable = true)
     private SocialMedia socialMedia;
 
@@ -26,6 +28,7 @@ public class User {
         this.setLastName(newUser.getLastName());
         this.setEmail(newUser.getEmail());
         this.setPassword(newUser.getPassword());
+        this.setStatus(UserStatus.PENDING);
     }
 
     public Long getId() {
@@ -83,6 +86,14 @@ public class User {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public UserStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
     }
 
     public SocialMedia getSocialMedia() {

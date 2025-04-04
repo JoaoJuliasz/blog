@@ -1,5 +1,6 @@
 package com.juliasz.blog.service;
 
+import com.juliasz.blog.enums.UserStatus;
 import com.juliasz.blog.model.User;
 import com.juliasz.blog.model.dto.NewPassword;
 import com.juliasz.blog.model.dto.NewUserDto;
@@ -65,7 +66,12 @@ public class UserService {
                 );
             }
             field.setAccessible(true);
-            ReflectionUtils.setField(field, user, value);
+            if (field.getType().isEnum() && value instanceof String) {
+                UserStatus enumValue = UserStatus.fromString((String) value);
+                ReflectionUtils.setField(field, user, enumValue);
+            } else {
+                ReflectionUtils.setField(field, user, value);
+            }
         });
         userRepository.save(user);
         return user;
