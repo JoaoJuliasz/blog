@@ -47,4 +47,9 @@ public class UserController {
     public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
     }
+
+    @GetMapping(value = "/validate/{code}")
+    public void validateEmail(@PathVariable String code) {
+        userService.confirmEmail(code);
+    }
 }

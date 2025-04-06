@@ -2,6 +2,7 @@ package com.juliasz.blog.service;
 
 import com.juliasz.blog.enums.UserStatus;
 import com.juliasz.blog.model.User;
+import com.juliasz.blog.model.UserValidation;
 import com.juliasz.blog.model.dto.NewPassword;
 import com.juliasz.blog.model.dto.NewUserDto;
 import com.juliasz.blog.repository.UserRepository;
@@ -22,14 +23,15 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordService passwordService;
-
     private final EmailService emailService;
+    private final UserValidationService userValidationService;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordService passwordService, EmailService emailService) {
+    public UserService(UserRepository userRepository, PasswordService passwordService, EmailService emailService, UserValidationService userValidationService) {
         this.userRepository = userRepository;
         this.passwordService = passwordService;
         this.emailService = emailService;
+        this.userValidationService = userValidationService;
     }
 
     public List<User> findAll() {
@@ -48,12 +50,20 @@ public class UserService {
         if (validateUserEmail(newUser.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This email already exists");
         }
-        String token = UUID.randomUUID().toString();
-        this.emailService.sendConfirmationEmail(newUser.getEmail(), token);
         User user = new User(newUser);
         user.setPassword(passwordService.encryptPassword(user.getPassword()));
-//        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        String token = userValidationService.createOne(savedUser.getId());
+        emailService.sendConfirmationEmail(newUser.getEmail(), token);
         return user;
+    }
+
+    public void confirmEmail(String confirmationToken) {
+        UserValidation validation = userValidationService.findOne(confirmationToken);
+        User user = findOne(validation.getUserId());
+        user.setStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+        userValidationService.deleteOne(confirmationToken);
     }
 
     public void deleteUser(Long id) {

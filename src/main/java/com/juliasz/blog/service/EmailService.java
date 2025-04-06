@@ -16,7 +16,7 @@ public class EmailService {
 
     public void sendConfirmationEmail(String recipientEmail, String token) {
         String subject = "Please confirm your email";
-        String confirmationUrl = "http://your-domain.com/confirm?token=" + token;
+        String confirmationUrl = "http://localhost:8090/user/validate/" + token;
         String message = "Thank you for registering. Please click the link below to activate your account:\n"
                 + confirmationUrl;
 
