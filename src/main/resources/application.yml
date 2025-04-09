@@ -34,3 +34,6 @@ aws:
   access-key-id: ${AWS_ACCESS_KEY_ID}
   secret-access-key: ${AWS_SECRET_ACCESS_KEY}
   region: us-east-2
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 3600000

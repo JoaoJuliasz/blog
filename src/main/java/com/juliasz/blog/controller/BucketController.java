@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/bucket")
 public class BucketController {
-    private AmazonClientService amazonClient;
+    private final AmazonClientService amazonClient;
 
     @Autowired
     BucketController(AmazonClientService amazonClient) {
