@@ -26,6 +26,7 @@ public class WebSecurityConfig {
                 "/post/*",
                 "/user",
                 "/user/*",
+                "/search"
         };
 
         http.csrf(AbstractHttpConfigurer::disable)
