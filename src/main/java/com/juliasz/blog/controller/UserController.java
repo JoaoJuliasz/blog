@@ -3,6 +3,7 @@ package com.juliasz.blog.controller;
 import com.juliasz.blog.model.User;
 import com.juliasz.blog.model.dto.NewPassword;
 import com.juliasz.blog.model.dto.NewUserDto;
+import com.juliasz.blog.model.dto.UserWithPostsDto;
 import com.juliasz.blog.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +25,8 @@ public class UserController {
     }
 
     @GetMapping(value = "{id}")
-    public User findOne(@PathVariable Long id) {
-        return userService.findOne(id);
+    public UserWithPostsDto findOne(@PathVariable Long id) {
+        return userService.findUser(id);
     }
 
     @PostMapping

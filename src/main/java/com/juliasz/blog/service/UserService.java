@@ -1,10 +1,13 @@
 package com.juliasz.blog.service;
 
 import com.juliasz.blog.enums.UserStatus;
+import com.juliasz.blog.model.Post;
 import com.juliasz.blog.model.User;
 import com.juliasz.blog.model.UserValidation;
 import com.juliasz.blog.model.dto.NewPassword;
 import com.juliasz.blog.model.dto.NewUserDto;
+import com.juliasz.blog.model.dto.UserPostsDto;
+import com.juliasz.blog.model.dto.UserWithPostsDto;
 import com.juliasz.blog.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,24 +28,34 @@ public class UserService {
     private final EmailService emailService;
     private final UserValidationService userValidationService;
 
+    private final PostService postService;
+
     @Autowired
-    public UserService(UserRepository userRepository, PasswordService passwordService, EmailService emailService, UserValidationService userValidationService) {
+    public UserService(UserRepository userRepository, PasswordService passwordService, EmailService emailService, UserValidationService userValidationService, PostService postService) {
         this.userRepository = userRepository;
         this.passwordService = passwordService;
         this.emailService = emailService;
         this.userValidationService = userValidationService;
+        this.postService = postService;
     }
 
     public List<User> findAll() {
         return userRepository.findAll();
     }
 
-    public User findOne(Long id) {
+    private User findOne(Long id) {
         Optional<User> foundUser = userRepository.findById(id);
         if (foundUser.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         return foundUser.get();
+    }
+
+    public UserWithPostsDto findUser(Long id) {
+        User user = findOne(id);
+        List<UserPostsDto> posts = postService.findAllByUserId(id);
+        return new UserWithPostsDto(user.getId(), user.getFirstName(),
+                user.getLastName(), user.getEmail(), user.getAbout(), user.getImage(), user.getSocialMedia(), posts);
     }
 
     public User createUser(NewUserDto newUser) {

@@ -3,6 +3,7 @@ package com.juliasz.blog.service;
 import com.juliasz.blog.model.Post;
 import com.juliasz.blog.model.Tag;
 import com.juliasz.blog.model.dto.PostDto;
+import com.juliasz.blog.model.dto.UserPostsDto;
 import com.juliasz.blog.repository.PostRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,11 @@ public class PostService {
 
     public List<Post> findAll() {
         return postRepository.findAll();
+    }
+
+    public List<UserPostsDto> findAllByUserId(Long id) {
+        List<Post> posts = postRepository.findAllByCreatorId(id);
+        return posts.stream().map(post -> new UserPostsDto(post.getTitle(), post.getId(), post.getImage(), post.getTags())).toList();
     }
 
     public Post createPost(PostDto postDto) {
