@@ -21,10 +21,12 @@ import java.util.Set;
 public class PostService {
     private final PostRepository postRepository;
     private final TagService tagService;
+    private final SubscriptionService subscriptionService;
 
-    public PostService(PostRepository postRepository, TagService tagService) {
+    public PostService(PostRepository postRepository, TagService tagService, SubscriptionService subscriptionService) {
         this.postRepository = postRepository;
         this.tagService = tagService;
+        this.subscriptionService = subscriptionService;
     }
 
     public Post findOne(Long id) {
@@ -48,6 +50,7 @@ public class PostService {
         Set<Tag> tags = tagService.createAllTag(postDto.getTags());
         Post newPost = new Post(postDto.getTitle(), postDto.getSubtitle(), postDto.getImage(), postDto.getBody(), 0, 0, postDto.getCreatorId(), new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()), tags);
         postRepository.save(newPost);
+        subscriptionService.sendNotificationToSubscribers(newPost.getCreatorId());
         return newPost;
     }
 
