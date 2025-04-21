@@ -50,7 +50,7 @@ public class PostService {
         Set<Tag> tags = tagService.createAllTag(postDto.getTags());
         Post newPost = new Post(postDto.getTitle(), postDto.getSubtitle(), postDto.getImage(), postDto.getBody(), 0, 0, postDto.getCreatorId(), new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()), tags);
         postRepository.save(newPost);
-        subscriptionService.sendNotificationToSubscribers(newPost.getCreatorId());
+        subscriptionService.sendNotificationToSubscribers(newPost.getId(), newPost.getTitle(), newPost.getCreatorId());
         return newPost;
     }
 
